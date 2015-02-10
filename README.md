@@ -1,2 +1,2 @@
-# stuff
-To share different stuff I am working on
+# Jose's stuff
+To share different projects I am working on
