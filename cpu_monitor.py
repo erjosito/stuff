@@ -1,4 +1,4 @@
-# Created by Jose Moreno
+# Created by Jose Moreno, josemor@cisco.com
 #
 # v0.1 (January 2015)
 #
@@ -6,8 +6,12 @@
 #    to see here Python best practices ;)
 #
 # - Monitors the CPU of a VM
-# - If the CPU usage exceeds a predefined threshold, it deploys a new VM, and adds
-#   it into the Web farm in an F5 BigIP ADC over the ACI API
+# - If the CPU usage exceeds a predefined threshold, it deploys a new VM
+# - The new VM gets an IP address over DHCP, the script reads it (over the
+#   VMware tools) and adds it into the Web farm in an F5 BigIP ADC over the
+#   ACI API
+# - Native REST calls are used to interact with APIC, the Python SDK is a
+#   future improvement possibility
 # - When the CPU falls below the threshold, the VM is deleted and the IP address
 #   removed from the BigIP farm.
 #
