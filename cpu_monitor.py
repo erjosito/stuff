@@ -4,6 +4,8 @@
 #
 # This script was created as a part of a proof of concept, please don't expect
 #    to see here Python best practices ;)
+# You can find background info about why this script was created and how it
+#    can be used here: http://erjosito.tumblr.com/post/110742308847/the-network-is-not-in-my-way
 #
 # - Monitors the CPU of a VM
 # - If the CPU usage exceeds a predefined threshold, it deploys a new VM
