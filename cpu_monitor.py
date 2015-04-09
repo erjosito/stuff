@@ -39,13 +39,6 @@ def find_vm(vm_name):
     except VIException:
         return None
 
-def get_vm_cpu_old(vm_name):
-   vmlist = server.get_registered_vms()
-   for vmname in vmlist:
-      if vmname.find(vm_name) > 0:
-         vm = server.get_vm_by_path(vmname)
-         return vm.properties.summary.quickStats.overallCpuUsage
-
 def get_vm_cpu(vm_name):
     try:
         vm = server.get_vm_by_name(vm_name)
