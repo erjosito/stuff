@@ -1,4 +1,3 @@
-__author__ = 'camrossi'
 ################################################################################
 # Authors: Jose Moreno (based on original script by Camilo Rossi)              #
 # josemor@cisco.com                                                            #
