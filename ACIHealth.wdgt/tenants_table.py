@@ -17,31 +17,32 @@ def login():
     except requests.exceptions.RequestException as e:
         print('Login HTTP Request failed')
 
-def get_info ():
-    # Create tenant (POST http://10.49.238.40/api/node/mo/uni/tn-helloworld_REST.json)
-    global login_cookies
-    global apic_url
-    try:
+def get_tenant():
+	# Create tenant (POST http://10.49.238.40/api/node/mo/uni/tn-helloworld_REST.json)
+	global login_cookies
+	global apic_url
+	try:
 		r = requests.get(
-			url = apic_url + "api/node/class/faultSummary.json?order-by=faultSummary.severity|desc&page=0&page-size=15",
+			url = apic_url + "api/node/class/fvTenant.json?rsp-subtree-include=health",
 			cookies = login_cookies)
 		json_obj = json.loads (r.text)
-		numFaults = int(json_obj['totalCount'])
-		print "<table width='100%%' id='faulttable'>"
-		print "<thead><tr><th>Fault</th><th>Severity</th></tr></thead>"
-		for i in range (0, numFaults-1):
-			try:
-				cause     = json_obj['imdata'][i]['faultSummary']['attributes']['cause']
-				count     = json_obj['imdata'][i]['faultSummary']['attributes']['count']
-				sev       = json_obj['imdata'][i]['faultSummary']['attributes']['severity']
-				if i < 15:
-					print "<tr><td>%s</td><td>%s</td></tr>" % (cause[:20], sev)
-			except:
-				pass
+		numTenants = int(json_obj['totalCount'])
+		print "<table width='100%%' id='healthtable'>"
+		print "<thead><tr><th>Tenant name</th><th>Health</th></tr></thead>"
+		for i in range (0, numTenants-1):
+			name   = json_obj['imdata'][i]['fvTenant']['attributes']['name']
+			health =  json_obj['imdata'][i]['fvTenant']['children'][0]['healthInst']['attributes']['twScore']
+			healthnum = int (health)
+			if (health > 90):
+				print "<tr><td>%s</td><td align='right'>%s</td></tr>" % (name, health)
+			else:
+				print "<tr><td>%s</td><td align='right'>%s</td></tr>" % (name, health)
 		print "</table>"
-    except requests.exceptions.RequestException as e:
-        print('Create tenant HTTP Request failed')
+	except requests.exceptions.RequestException as e:
+		print('Create tenant HTTP Request failed')
         
+# Main routine
+
 # Create cookie variable
 login_cookies = ""
 
@@ -57,6 +58,6 @@ else:
 	if apic_url [len (apic_url) - 1] != "/":
 		apic_url += "/"
 	# Do what you need to do
-	login ()
-	get_info ()
+	login()
+	get_tenant()
 

@@ -27,17 +27,17 @@ def get_tenant():
 			cookies = login_cookies)
 		json_obj = json.loads (r.text)
 		numTenants = int(json_obj['totalCount'])
-		#print "<table>"
-		print "<tr><td>Tenant name</td><td>Health</td></tr>"
+		print "<ul>"
+		print "<li>Tenant name</li><li>Health</li>"
 		for i in range (0, numTenants-1):
 			name   = json_obj['imdata'][i]['fvTenant']['attributes']['name']
 			health =  json_obj['imdata'][i]['fvTenant']['children'][0]['healthInst']['attributes']['twScore']
 			healthnum = int (health)
 			if (health > 90):
-				print "<tr><td>%s</td><td align='right'>%s</td></tr>" % (name, health)
+				print "<li>%s</li><li>%s</li>" % (name, health)
 			else:
-				print "<tr><td>%s</td><td align='right'>%s</td></tr>" % (name, health)
-		#print "</table>"
+				print "<li>%s</li><li>%s</li>" % (name, health)
+		print "</ul>"
 	except requests.exceptions.RequestException as e:
 		print('Create tenant HTTP Request failed')
         

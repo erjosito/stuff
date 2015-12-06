@@ -30,8 +30,8 @@ def get_info():
 		)
 		json_obj = json.loads (r.text)
 		numNodes = int(json_obj['totalCount'])
-		print "<table width='100%%'>"
-		print "<tr><td>Switch name</td><td>Health</td></tr>"
+		print "<table width='100%%' id='healthtable'>"
+		print "<thead><tr><th>Switch name</th><th>Health</th></tr></thead>"
 		for i in range (0, numNodes-1):
 			name   = json_obj['imdata'][i]['topSystem']['attributes']['name']
 			role   = json_obj['imdata'][i]['topSystem']['attributes']['role']

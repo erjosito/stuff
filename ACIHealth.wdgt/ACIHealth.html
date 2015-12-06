@@ -68,7 +68,7 @@
 		position: absolute;
 		top: 110px;
 		left: 15px;
-		width: 180px;		
+		width: 215px;	
 	}
 
 	.heartposition {		
@@ -104,21 +104,45 @@
 	}
 
    .button1_position {
-		position:fixed;
+		position:absolute;
 		top: 530px; 
 		left:20px;
 	}
    .button2_position {
-		position:fixed;
+		position:absolute;
 		top: 530px; 
 		left:90px;
 	}
    .button3_position {
-		position:fixed;
+		position:absolute;
 		top: 530px; 
 		left:170px;
 	}
 
+	th {
+		font: 12px "Lucida Grande";
+		color: white;
+		font-weight: bold;
+		/* border-bottom: 3px solid #cecfd5; */
+	}	
+	td {
+		font: 12px "Lucida Grande";
+		color: gray;
+	}	
+	td:last-child {
+		text-align: center;	
+		border-radius: 5px;
+	}
+	tbody tr:nth-child(even) {
+	  background: #f0f0f2;
+	}
+	thead {
+	  background: #395870;
+	  background: linear-gradient(#49708f, #293f50);
+	  color: #fff;
+	  font-size: 11px;
+	  text-transform: uppercase;
+	}
 
 </style>
 
@@ -129,6 +153,9 @@
 
 <script type='text/javascript'>
 	var showVariables = false;
+	var showingNow    = "nothing";
+	var mingreen      = 80;
+	var minorange     = 50;
 	
 	var gDoneButton;
 	var gInfoButton;
@@ -137,6 +164,7 @@
 		gDoneButton = new AppleGlassButton(document.getElementById("doneButton"), "Done", hidePrefs);
 		gInfoButton = new AppleInfoButton(document.getElementById("infoButton"), document.getElementById("front"), "black", "black", showPrefs);
 		if (showVariables) displayOptions ();
+		displayTitle ();
 	}
 	
 
@@ -152,6 +180,23 @@ function displayOptions () {
 	var text = text + apicurl + "<br>";
 	var text = text + apicusr + "<br>";
 	document.getElementById('options').innerHTML = text;
+}
+
+function displayTitle () {
+	if (window.widget) {
+		var apicurl = widget.preferenceForKey("apicurl");
+		var apicusr = widget.preferenceForKey("apicusr");
+		var apicpwd = widget.preferenceForKey("apicpwd");
+		if (!(apicurl.length > 0)) {
+			document.getElementById('title').innerHTML = "Please define the APIC's URL in the Preferences";
+		} else {
+			if ((!(apicusr.length > 0)) || (!(apicpwd.length > 0))) {
+				document.getElementById('title').innerHTML = "Please define the APIC credentials in the Preferences";
+			} else {
+				document.getElementById('title').innerHTML = "Please choose an option below";
+			}
+		}
+	}
 }
 
 function setDefaultOptions () {
@@ -184,38 +229,103 @@ function setOptions () {
 	}
 }
 	
-	function showPrefs() {
-		var front = document.getElementById("front");
-		var back = document.getElementById("back");
- 
-		if (window.widget)
-			widget.prepareForTransition("ToBack");
- 
-		front.style.display="none";
-		back.style.display="block";
- 
-		if (window.widget)
-			setTimeout ('widget.performTransition();', 0);
-			
-		fillOptions ();
-	}
+function showPrefs() {
+	var front = document.getElementById("front");
+	var back = document.getElementById("back");
 
-	function hidePrefs() {
-		var front = document.getElementById("front");
-		var back = document.getElementById("back");
- 
-		if (window.widget)
-			widget.prepareForTransition("ToFront");
- 
-		back.style.display="none";
-		front.style.display="block";
- 
-		if (window.widget)
-			setTimeout ('widget.performTransition();', 0);
-			
-		setOptions ();
-		if (showVariables) displayOptions();
+	if (window.widget)
+		widget.prepareForTransition("ToBack");
+
+	front.style.display="none";
+	back.style.display="block";
+
+	if (window.widget)
+		setTimeout ('widget.performTransition();', 0);
+		
+	fillOptions ();
+}
+
+function hidePrefs() {
+	var front = document.getElementById("front");
+	var back = document.getElementById("back");
+
+	if (window.widget)
+		widget.prepareForTransition("ToFront");
+
+	back.style.display="none";
+	front.style.display="block";
+
+	if (window.widget)
+		setTimeout ('widget.performTransition();', 0);
+		
+	setOptions ();
+	if (showVariables) displayOptions();
+	displayTitle ();
+}
+
+function goToAPIC () {
+   if (widget) {
+   		// Get the APIC URL out of the preferences
+		var apicurl = widget.preferenceForKey("apicurl");
+		// Append a slash if not there
+		if (!(apicurl.substr (apicurl.length, 1) == '/')) {
+			apicurl = apicurl + '/';
+		}
+		// Open the Browser
+		switch (showingNow) {
+			case "tenants":
+				widget.openURL (apicurl + '#bTenants:AllTenants');
+				breakout;
+			case "fabric":
+				widget.openURL (apicurl + '#c:a.1|topology/pod-1');
+				breakout;
+			case "faults":
+				widget.openURL (apicurl + '#a:c');
+				breakout;
+		}
+    }
+}
+
+function formatHealthTable() {
+	var table = document.getElementById('healthtable');
+	var tbody = table.getElementsByTagName('tbody')[0];
+	var cells = tbody.getElementsByTagName('td');
+
+	for (var i=0, len=cells.length; i<len; i++){
+		var value = parseInt (cells[i].innerHTML,10);
+		if (value > mingreen){
+			cells[i].style.backgroundColor = 'green';
+			cells[i].style.color = 'white';
+		} else if (value < minorange){
+			cells[i].style.backgroundColor = 'red';
+			cells[i].style.color = 'white';
+		} else if ((value >=minorange) && (value <=mingreen)) {
+			cells[i].style.backgroundColor = 'orange';
+			cells[i].style.color = 'white';
+		}
 	}
+}
+
+function formatFaultTable() {
+	var table = document.getElementById('faulttable');
+	var tbody = table.getElementsByTagName('tbody')[0];
+	var cells = tbody.getElementsByTagName('td');
+
+	for (var i=0, len=cells.length; i<len; i++){
+		var value = cells[i].innerHTML;
+		if (value == 'critical'){
+			cells[i].style.backgroundColor = 'red';
+			cells[i].style.color = 'white';
+		} else if (value == 'major'){
+			cells[i].style.backgroundColor = 'orange';
+			cells[i].style.color = 'white';
+		} else if (value == 'minor') {
+			cells[i].style.backgroundColor = 'yellow';
+			cells[i].style.color = 'gray';
+		}
+	}
+}
+
 
 function checkHealth () {
 	// Get preferences
@@ -237,14 +347,16 @@ function button1() {
 	var apicurl = widget.preferenceForKey("apicurl");
 	var apicusr = widget.preferenceForKey("apicusr");
 	var apicpwd = widget.preferenceForKey("apicpwd");
-	var cmd     = "/usr/bin/python tenants.py " + apicurl + " " + apicusr + " " + apicpwd;
+	var cmd     = "/usr/bin/python tenants_table.py " + apicurl + " " + apicusr + " " + apicpwd;
 	// Get output out of external Python script
 	var txt = widget.system(cmd, null).outputString;
 	// Populate document sections
 	document.getElementById('maintable').innerHTML = txt;
+	formatHealthTable ();
 	document.getElementById('title').innerHTML = "Tenant health";
 	document.getElementById('subtitle').innerHTML = "";
 	checkHealth ();
+	showingNow = "tenants";
 }
 
 function button2() {
@@ -257,9 +369,11 @@ function button2() {
 	var txt = widget.system(cmd, null).outputString;
 	// Populate document sections
 	document.getElementById('maintable').innerHTML = txt;
+	formatHealthTable ();
 	document.getElementById('title').innerHTML = "Switch health";
 	document.getElementById('subtitle').innerHTML = "";
 	checkHealth ();
+	showingNow = "fabric";
 }
 
 function button3() {
@@ -273,9 +387,11 @@ function button3() {
 		var txt = widget.system(cmd, null).outputString;
 		// Populate document sections
 		document.getElementById('maintable').innerHTML = txt;
+		formatFaultTable ();
 		document.getElementById('title').innerHTML = "Fabric faults";
-		document.getElementById('subtitle').innerHTML = "Truncated to 10 faults";
+		document.getElementById('subtitle').innerHTML = "Truncated to 15 faults";
 		checkHealth ();
+		showingNow = "faults";
 	} else {
 		showPrefs ();
 	}
@@ -307,9 +423,9 @@ function button3() {
 			<p id="options"></p>
 		</span>
 
-		<span class="maintext">
-			<table id="maintable" width="100%">
-			</table>
+		<span class="maintext" id="maintable" onclick="goToAPIC()">
+		</span>
+		<span>
 			<button type="button" onclick="button1()" class="button1_position">Tenants</button>
 			<button type="button" onclick="button2()" class="button2_position">Switches</button>
 			<button type="button" onclick="button3()" class="button3_position">Faults</button>
