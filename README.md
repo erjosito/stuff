@@ -1,8 +1,9 @@
 # Jose's stuff
 To share different projects I am working on
 
-cpu_monitor.py: this is a Python script that autoscales up and down a Web farm, adding the new VMs to the F5 BigIP server pool using ACI's API
+ACIHealth.wdgt moved to its own repository (https://github.com/erjosito/ACIHealth.wdgt)
 
+cpu_monitor.py: this is a Python script that autoscales up and down a Web farm, adding the new VMs to the F5 BigIP server pool using ACI's API
 
 json2doc.py: converts ACI tenant config in JSON (can be generated with the Save As function in the GUI) in a Word document including diagrams. You can see an output example in the file pod1.docx
 
