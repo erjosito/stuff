@@ -15,5 +15,3 @@ deleteUIpolicies.py: deletes policies generated with GUI wizard (whose name begi
 You can find the UCSD stuff in Cisco communities here (since GitHub is apparently not the ideal tool to share UCSD workflows):
 - REST API custom tasks: https://communities.cisco.com/docs/DOC-58159
 - Openstack custom tasks: https://communities.cisco.com/docs/DOC-58158
-
-test
