@@ -1,26 +1,25 @@
 #!/bin/bash
 # Script to update a record in Azure DNS to match the current public IP address
+# See the blog post here for a detailed explanation:
+# https://1138blog.wordpress.com/2017/08/07/dynamic-dns-with-azure-dns-and-a-bash-script/
 
 # Tenant ID
 tenantId="here the GUID for your Azure tenant"
-# App ID
+# Azure AD App ID
 appId="here the GUID for an AD app you created, with access to your DNS resource"
-# App Secret
+# Azure AD App Secret
 appSecret="here the secret you configured for the app above"
-# Resource group name
+# Azure resource group name where your DNS zone is configured
 rgName="resourceGroupName"
-# Zone name
+# DNS zone name
 zoneName="yourdomain.com"
-# Existing record-set name in your zone
+# Existing A record-set name in your DNS zone
 recordsetName="mydyndns"
-# FQDN
-fqdn=$recordsetName.$zoneName
-
-# Prefix that will be searched to verify whether on the right network
+# Prefix that will be searched to verify whether you are on the right network
 localLANprefix="192.168.0"
 
-# Verify whether we are in the local network
-onLocalLAN=$(ip a | grep 192.168.2)
+# FQDN
+fqdn=$recordsetName.$zoneName
 
 # Verify 'dig' is there
 digPath=$(which dig)
@@ -38,8 +37,12 @@ then
     exit 1
 fi
 
+# Verify whether we are in the local network
+onLocalLAN=$(ip a | grep 192.168.2)
+
 if [[ -n $onLocalLAN ]] 
 then
+
     # Get public IP from ifconfig.co
     myPublicIp=$(curl ifconfig.co 2>/dev/null)
     if [[ $myPublicIp =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]
